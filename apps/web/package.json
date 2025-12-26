@@ -1,0 +1,23 @@
+{
+  "name": "tbslerp-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.5.1",
+    "nuxt": "^3.14.0",
+    "pinia": "^2.2.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^1.4.0",
+    "typescript": "^5.5.0"
+  }
+}
+

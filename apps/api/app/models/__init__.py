@@ -1,0 +1,55 @@
+"""ORM models for the ERP backend."""
+
+from app.core.db import Base
+from app.models.entities import (
+    Customer,
+    CustomerSourceFields,
+    Item,
+    ItemCategory,
+    ItemSourceFields,
+    GoodsReceipt,
+    GoodsReceiptLine,
+    PriceBook,
+    PurchaseOrder,
+    SalesInvoice,
+    SalesInvoiceLine,
+    StoreLocation,
+    StockMovement,
+    StaffUser,
+    ApiKey,
+    Alert,
+    AiDocument,
+    Supplier,
+    SupplierSourceFields,
+    Payment,
+    TaxProfile,
+    Tenant,
+)
+
+__all__ = [
+    "Base",
+    "Tenant",
+    "StoreLocation",
+    "ItemCategory",
+    "Item",
+    "SalesInvoice",
+    "SalesInvoiceLine",
+    "Payment",
+    "PurchaseOrder",
+    "GoodsReceipt",
+    "GoodsReceiptLine",
+    "StockMovement",
+    "StaffUser",
+    "ApiKey",
+    "Alert",
+    "AiDocument",
+    "Customer",
+    "Supplier",
+    "PriceBook",
+    "TaxProfile",
+    "ItemSourceFields",
+    "CustomerSourceFields",
+    "SupplierSourceFields",
+]
+
+
