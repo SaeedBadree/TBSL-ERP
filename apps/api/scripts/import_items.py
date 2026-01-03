@@ -9,7 +9,7 @@ from sqlalchemy import select
 from app.core.db import Base
 from app.core.db import engine as app_engine
 from app.models.entities import Item, ItemCategory, ItemSourceFields
-from app.scripts.utils import RejectLogger, common_argparser, iter_dict_rows, session_scope, utcnow
+from scripts.utils import RejectLogger, common_argparser, iter_dict_rows, session_scope, utcnow
 
 
 ESSENTIAL_HEADERS = ["Item Code", "Item Name"]

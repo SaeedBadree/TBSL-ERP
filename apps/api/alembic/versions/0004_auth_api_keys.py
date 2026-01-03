@@ -11,11 +11,8 @@ branch_labels = None
 depends_on = None
 
 
-staffrole = sa.Enum("CASHIER", "MANAGER", "ADMIN", "AUDITOR", name="staffrole")
-
-
 def upgrade() -> None:
-    staffrole.create(op.get_bind(), checkfirst=True)
+    op.execute("CREATE TYPE staffrole AS ENUM ('CASHIER', 'MANAGER', 'ADMIN', 'AUDITOR')")
 
     op.create_table(
         "staff_users",
@@ -35,7 +32,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String(length=255), nullable=False),
         sa.Column("full_name", sa.String(length=255), nullable=False),
         sa.Column("password_hash", sa.String(length=255), nullable=False),
-        sa.Column("role", staffrole, nullable=False),
+        sa.Column("role", postgresql.ENUM("CASHIER", "MANAGER", "ADMIN", "AUDITOR", name="staffrole", create_type=False), nullable=False),
         sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email", name="uq_staff_email"),
@@ -63,5 +60,5 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_table("api_keys")
     op.drop_table("staff_users")
-    staffrole.drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS staffrole")
 

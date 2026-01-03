@@ -5,9 +5,9 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Callable, Iterable, Optional
 
+import bcrypt
 import jwt
 from fastapi import Depends, Header, HTTPException, status
-from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,15 +15,13 @@ from app.core.config import settings
 from app.core.db import get_session
 from app.models.entities import ApiKey, StaffRole, StaffUser
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, hashed: str) -> bool:
-    return pwd_context.verify(password, hashed)
+    return bcrypt.checkpw(password.encode(), hashed.encode())
 
 
 def create_access_token(user_id: str, role: StaffRole) -> str:

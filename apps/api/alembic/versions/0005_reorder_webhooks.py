@@ -11,11 +11,8 @@ branch_labels = None
 depends_on = None
 
 
-webhookdeliverystatus = sa.Enum("PENDING", "SUCCESS", "FAILED", name="webhookdeliverystatus")
-
-
 def upgrade() -> None:
-    webhookdeliverystatus.create(op.get_bind(), checkfirst=True)
+    op.execute("CREATE TYPE webhookdeliverystatus AS ENUM ('PENDING', 'SUCCESS', 'FAILED')")
 
     op.create_table(
         "reorder_rules",
@@ -90,7 +87,7 @@ def upgrade() -> None:
         sa.Column("endpoint_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("event_type", sa.String(length=128), nullable=False),
         sa.Column("payload", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
-        sa.Column("status", webhookdeliverystatus, nullable=False, server_default="PENDING"),
+        sa.Column("status", postgresql.ENUM("PENDING", "SUCCESS", "FAILED", name="webhookdeliverystatus", create_type=False), nullable=False, server_default="PENDING"),
         sa.Column("attempts", sa.Integer(), nullable=False, server_default="0"),
         sa.Column("next_retry_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("last_error", sa.Text(), nullable=True),
@@ -108,5 +105,5 @@ def downgrade() -> None:
     op.drop_table("webhook_endpoints")
     op.drop_index("ix_reorder_rule_item_location", table_name="reorder_rules")
     op.drop_table("reorder_rules")
-    webhookdeliverystatus.drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS webhookdeliverystatus")
 

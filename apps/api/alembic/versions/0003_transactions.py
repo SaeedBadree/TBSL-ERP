@@ -11,19 +11,20 @@ branch_labels = None
 depends_on = None
 
 
-salesinvoicestatus = sa.Enum("draft", "finalized", "posted", name="salesinvoicestatus")
-goodsreceiptstatus = sa.Enum("draft", "posted", name="goodsreceiptstatus")
-purchaseorderstatus = sa.Enum("open", "closed", "cancelled", name="purchaseorderstatus")
-paymentmethod = sa.Enum("cash", "card", "transfer", name="paymentmethod")
-movementtype = sa.Enum("SALE", "SALE_RETURN", "PURCHASE_RECEIPT", "PURCHASE_RETURN", name="movementtype")
+salesinvoicestatus = sa.Enum("draft", "finalized", "posted", name="salesinvoicestatus", create_constraint=False)
+goodsreceiptstatus = sa.Enum("draft", "posted", name="goodsreceiptstatus", create_constraint=False)
+purchaseorderstatus = sa.Enum("open", "closed", "cancelled", name="purchaseorderstatus", create_constraint=False)
+paymentmethod = sa.Enum("cash", "card", "transfer", name="paymentmethod", create_constraint=False)
+movementtype = sa.Enum("SALE", "SALE_RETURN", "PURCHASE_RECEIPT", "PURCHASE_RETURN", name="movementtype", create_constraint=False)
 
 
 def upgrade() -> None:
-    salesinvoicestatus.create(op.get_bind(), checkfirst=True)
-    goodsreceiptstatus.create(op.get_bind(), checkfirst=True)
-    purchaseorderstatus.create(op.get_bind(), checkfirst=True)
-    paymentmethod.create(op.get_bind(), checkfirst=True)
-    movementtype.create(op.get_bind(), checkfirst=True)
+    # Create enums using raw SQL to avoid SQLAlchemy's automatic creation
+    op.execute("CREATE TYPE salesinvoicestatus AS ENUM ('draft', 'finalized', 'posted')")
+    op.execute("CREATE TYPE goodsreceiptstatus AS ENUM ('draft', 'posted')")
+    op.execute("CREATE TYPE purchaseorderstatus AS ENUM ('open', 'closed', 'cancelled')")
+    op.execute("CREATE TYPE paymentmethod AS ENUM ('cash', 'card', 'transfer')")
+    op.execute("CREATE TYPE movementtype AS ENUM ('SALE', 'SALE_RETURN', 'PURCHASE_RECEIPT', 'PURCHASE_RETURN')")
 
     op.create_table(
         "sales_invoices",
@@ -43,7 +44,7 @@ def upgrade() -> None:
         sa.Column("invoice_no", sa.String(length=64), nullable=False),
         sa.Column("customer_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("location_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("status", salesinvoicestatus, nullable=False, server_default="draft"),
+        sa.Column("status", postgresql.ENUM("draft", "finalized", "posted", name="salesinvoicestatus", create_type=False), nullable=False, server_default="draft"),
         sa.Column("subtotal", sa.Numeric(14, 2), nullable=False, server_default=sa.text("0")),
         sa.Column("tax_total", sa.Numeric(14, 2), nullable=False, server_default=sa.text("0")),
         sa.Column("discount_total", sa.Numeric(14, 2), nullable=False, server_default=sa.text("0")),
@@ -73,7 +74,7 @@ def upgrade() -> None:
         sa.Column("po_no", sa.String(length=64), nullable=False),
         sa.Column("supplier_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("location_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("status", purchaseorderstatus, nullable=False, server_default="open"),
+        sa.Column("status", postgresql.ENUM("open", "closed", "cancelled", name="purchaseorderstatus", create_type=False), nullable=False, server_default="open"),
         sa.ForeignKeyConstraint(["location_id"], ["store_locations.id"]),
         sa.ForeignKeyConstraint(["supplier_id"], ["suppliers.id"]),
         sa.PrimaryKeyConstraint("id"),
@@ -99,7 +100,7 @@ def upgrade() -> None:
         sa.Column("grn_no", sa.String(length=64), nullable=False),
         sa.Column("supplier_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("location_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("status", goodsreceiptstatus, nullable=False, server_default="draft"),
+        sa.Column("status", postgresql.ENUM("draft", "posted", name="goodsreceiptstatus", create_type=False), nullable=False, server_default="draft"),
         sa.Column(
             "received_at",
             sa.DateTime(timezone=True),
@@ -184,7 +185,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("invoice_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("method", paymentmethod, nullable=False),
+        sa.Column("method", postgresql.ENUM("cash", "card", "transfer", name="paymentmethod", create_type=False), nullable=False),
         sa.Column("amount", sa.Numeric(14, 2), nullable=False),
         sa.Column("reference", sa.String(length=128), nullable=True),
         sa.Column(
@@ -205,7 +206,7 @@ def upgrade() -> None:
         sa.Column("location_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("ref_type", sa.String(length=64), nullable=False),
         sa.Column("ref_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("movement_type", movementtype, nullable=False),
+        sa.Column("movement_type", postgresql.ENUM("SALE", "SALE_RETURN", "PURCHASE_RECEIPT", "PURCHASE_RETURN", name="movementtype", create_type=False), nullable=False),
         sa.Column("qty_delta", sa.Numeric(14, 3), nullable=False),
         sa.Column("unit_cost", sa.Numeric(14, 2), nullable=True),
         sa.Column("details", postgresql.JSONB(astext_type=sa.Text()), nullable=True),
@@ -247,9 +248,9 @@ def downgrade() -> None:
     op.drop_index("ix_sales_invoice_customer", table_name="sales_invoices")
     op.drop_table("sales_invoices")
 
-    movementtype.drop(op.get_bind(), checkfirst=True)
-    paymentmethod.drop(op.get_bind(), checkfirst=True)
-    purchaseorderstatus.drop(op.get_bind(), checkfirst=True)
-    goodsreceiptstatus.drop(op.get_bind(), checkfirst=True)
-    salesinvoicestatus.drop(op.get_bind(), checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS movementtype")
+    op.execute("DROP TYPE IF EXISTS paymentmethod")
+    op.execute("DROP TYPE IF EXISTS purchaseorderstatus")
+    op.execute("DROP TYPE IF EXISTS goodsreceiptstatus")
+    op.execute("DROP TYPE IF EXISTS salesinvoicestatus")
 

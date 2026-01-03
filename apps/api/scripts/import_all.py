@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import asyncio
 
-from app.scripts.import_items import import_items
-from app.scripts.import_customers import import_customers
-from app.scripts.import_suppliers import import_suppliers
-from app.scripts.utils import common_argparser
+from scripts.import_items import import_items
+from scripts.import_customers import import_customers
+from scripts.import_suppliers import import_suppliers
+from scripts.utils import common_argparser
 
 
 def build_parser():

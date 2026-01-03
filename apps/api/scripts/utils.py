@@ -68,7 +68,9 @@ class RejectLogger:
     path: str
 
     def log(self, row_num: int, reason: str) -> None:
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
+        dirname = os.path.dirname(self.path)
+        if dirname:
+            os.makedirs(dirname, exist_ok=True)
         with open(self.path, "a", encoding="utf-8") as f:
             f.write(f"{row_num},{reason}\n")
 

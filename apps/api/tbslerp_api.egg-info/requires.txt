@@ -7,6 +7,10 @@ pydantic>=2.5.0
 pydantic-settings>=2.1.0
 redis>=5.0.1
 python-dotenv>=1.0.0
+pyjwt>=2.8.0
+passlib[bcrypt]>=1.7.4
+httpx>=0.25.0
+rapidfuzz>=3.8.0
 
 [dev]
 ruff>=0.2.0

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.errors import add_exception_handlers
@@ -7,6 +8,7 @@ from app.routers import auth as auth_router
 from app.routers import integrations as integrations_router
 from app.routers import reorder as reorder_router
 from app.routers import alerts as alerts_router
+from app.routers import catalog as catalog_router
 from app.services.webhook_service import webhook_worker
 from app.core.db import async_session
 import asyncio
@@ -22,11 +24,21 @@ def create_app() -> FastAPI:
         redoc_url="/redoc",
     )
 
+    # Add CORS middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     add_exception_handlers(app)
     app.include_router(auth_router.router)
     app.include_router(integrations_router.router)
     app.include_router(reorder_router.router)
     app.include_router(alerts_router.router)
+    app.include_router(catalog_router.router)
 
     @app.get("/health", summary="Health check")
     async def health() -> dict[str, str]:

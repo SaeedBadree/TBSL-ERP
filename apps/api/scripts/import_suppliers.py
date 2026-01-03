@@ -5,7 +5,7 @@ import argparse
 from sqlalchemy import select
 
 from app.models.entities import Supplier, SupplierSourceFields
-from app.scripts.utils import RejectLogger, common_argparser, iter_dict_rows, session_scope, utcnow
+from scripts.utils import RejectLogger, common_argparser, iter_dict_rows, session_scope, utcnow
 
 
 ESSENTIAL_HEADERS = ["Distributor Code", "Distributor Name"]

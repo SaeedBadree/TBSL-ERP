@@ -12,6 +12,10 @@ Requires-Dist: pydantic>=2.5.0
 Requires-Dist: pydantic-settings>=2.1.0
 Requires-Dist: redis>=5.0.1
 Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: pyjwt>=2.8.0
+Requires-Dist: passlib[bcrypt]>=1.7.4
+Requires-Dist: httpx>=0.25.0
+Requires-Dist: rapidfuzz>=3.8.0
 Provides-Extra: dev
 Requires-Dist: ruff>=0.2.0; extra == "dev"
 Requires-Dist: pytest>=7.4.0; extra == "dev"
