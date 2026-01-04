@@ -13,7 +13,11 @@ ESSENTIAL_HEADERS = ["Customer Code", "Customer Name"]
 
 async def upsert_customer(session, row: dict, source_file: str):
     code = row.get("Customer Code") or row.get("CUSTOMER CODE")
-    name = row.get("Customer Name") or row.get("CUSTOMER NAME")
+    name = (
+        row.get("Customer Name")
+        or row.get("CUSTOMER NAME")
+        or row.get("Customer name")  # some exports use lowercase 'n'
+    )
     if not code or not name:
         raise ValueError("Missing customer code or name")
 

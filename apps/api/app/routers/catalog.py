@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
+import uuid
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -21,7 +22,7 @@ router = APIRouter()
 
 
 class ItemOut(BaseModel):
-    id: str
+    id: uuid.UUID
     item_code: Optional[str] = None
     sku: Optional[str] = None
     name: Optional[str] = None
@@ -35,7 +36,7 @@ class ItemOut(BaseModel):
 
 
 class CustomerOut(BaseModel):
-    id: str
+    id: uuid.UUID
     customer_code: Optional[str] = None
     name: str
     phone: Optional[str] = None
@@ -47,7 +48,7 @@ class CustomerOut(BaseModel):
 
 
 class SupplierOut(BaseModel):
-    id: str
+    id: uuid.UUID
     supplier_code: Optional[str] = None
     name: str
     phone: Optional[str] = None
@@ -58,17 +59,17 @@ class SupplierOut(BaseModel):
 
 
 class LocationOut(BaseModel):
-    id: str
+    id: uuid.UUID
     name: str
 
     model_config = {"from_attributes": True}
 
 
 class StockBalanceOut(BaseModel):
-    item_id: str
+    item_id: uuid.UUID
     item_code: Optional[str]
     item_name: Optional[str]
-    location_id: str
+    location_id: uuid.UUID
     location_name: Optional[str]
     available: float
     min_level: Optional[float] = None
